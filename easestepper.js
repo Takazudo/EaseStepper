@@ -1,5 +1,5 @@
 /*! EaseStepper (https://github.com/Takazudo/EaseStepper)
- * lastupdate: 2013-04-18
+ * lastupdate: 2013-04-19
  * version: 1.0.0
  * author: 'Takazudo' Takeshi Takatsudo <takazudo@gmail.com>
  * License: MIT */
@@ -89,9 +89,88 @@
 
     __extends(EaseStepper, _super);
 
-    function EaseStepper() {
-      console.log('foo');
+    function EaseStepper(options) {
+      this.options = options;
+      this._tweakOptions();
+      this._whileEasing = false;
+      this._stopRequested = false;
     }
+
+    EaseStepper.prototype._tweakOptions = function() {
+      var o;
+      o = this.options;
+      if (!o.fps) {
+        o.fps = 13;
+      }
+      if (o.done) {
+        this.done(o.done);
+      }
+      if (!o.beginningValue) {
+        o.beginningValue = 0;
+      }
+      if (!o.valueInChange) {
+        o.valueInChange = o.endValue - o.beginningValue;
+      }
+      return this;
+    };
+
+    EaseStepper.prototype._triggerEvent = function(name, elapsedTimeRate, valueChangeRate, value) {
+      this._currentData = {
+        elapsedTimeRate: elapsedTimeRate,
+        valueChangeRate: valueChangeRate,
+        value: value + this.options.beginningValue
+      };
+      this.trigger(name, this._currentData);
+      return this;
+    };
+
+    EaseStepper.prototype.start = function() {
+      var currentVal, elapsedTime, o, tick,
+        _this = this;
+      o = this.options;
+      this._triggerEvent('start', 0, 0, 0);
+      elapsedTime = 0;
+      currentVal = 0;
+      this._whileEasing = true;
+      tick = function() {
+        var elapsedTimeRate, valueChangeRate;
+        if (_this._stopRequested === true) {
+          return;
+        }
+        if (elapsedTime >= o.duration) {
+          _this._whileEasing = false;
+          _this._triggerEvent('end', 1, 1, o.valueInChange);
+          return;
+        }
+        if (elapsedTime !== 0) {
+          elapsedTimeRate = elapsedTime / o.duration;
+          valueChangeRate = o.easing(elapsedTimeRate, elapsedTime, 0, 1, o.duration);
+          currentVal = o.valueInChange * valueChangeRate;
+          _this._triggerEvent('step', elapsedTimeRate, valueChangeRate, currentVal);
+        }
+        elapsedTime += o.fps;
+        return setTimeout(tick, o.fps);
+      };
+      tick();
+      return this;
+    };
+
+    EaseStepper.prototype.stop = function() {
+      if (this._whileEasing === false) {
+        return false;
+      }
+      this._stopRequested = true;
+      this._triggerEvent('stop', this._currentData);
+      return this;
+    };
+
+    EaseStepper.prototype.done = function(fn) {
+      var _this = this;
+      this.on('end', function() {
+        return fn(_this);
+      });
+      return this;
+    };
 
     return EaseStepper;
 

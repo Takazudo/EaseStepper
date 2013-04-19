@@ -52,8 +52,93 @@ class ns.Event
 # EaseStepper
 
 class EaseStepper extends ns.Event
-  constructor: ->
-    console.log 'foo'
+
+  # options:
+  #   fps
+  #   easing
+  #   duration
+  #   valueInChange
+  #   done
+  #   beginningValue
+  #   endValue
+  constructor: (@options) ->
+
+    @_tweakOptions()
+    @_whileEasing = false
+    @_stopRequested = false
+
+  _tweakOptions: ->
+
+    o = @options
+
+    unless o.fps
+      o.fps = 13
+
+    if o.done
+      @done o.done
+
+    unless o.beginningValue
+      o.beginningValue = 0
+
+    unless o.valueInChange
+      o.valueInChange = o.endValue - o.beginningValue
+
+    return this
+
+  _triggerEvent: (name, elapsedTimeRate, valueChangeRate, value) ->
+
+    @_currentData = 
+      elapsedTimeRate: elapsedTimeRate
+      valueChangeRate: valueChangeRate
+      value: value + @options.beginningValue
+
+    @trigger name, @_currentData
+    return this
+
+  start: ->
+    
+    o = @options
+
+    @_triggerEvent 'start', 0, 0, 0
+    elapsedTime = 0
+    currentVal = 0
+    @_whileEasing = true
+
+    tick = =>
+
+      return if @_stopRequested is true
+
+      if elapsedTime >= o.duration
+
+        @_whileEasing = false
+        @_triggerEvent 'end', 1, 1, o.valueInChange
+        return
+
+      if elapsedTime isnt 0
+
+        elapsedTimeRate = elapsedTime / o.duration
+        valueChangeRate = o.easing elapsedTimeRate, elapsedTime, 0, 1, o.duration
+        currentVal = o.valueInChange * valueChangeRate
+
+        @_triggerEvent 'step', elapsedTimeRate, valueChangeRate, currentVal
+
+      elapsedTime += o.fps
+      setTimeout tick, o.fps
+
+    tick()
+
+    return this
+
+  stop: ->
+    return false if @_whileEasing is false
+    @_stopRequested = true
+    @_triggerEvent 'stop', @_currentData
+    return this
+
+  done: (fn) ->
+    @on 'end', =>
+      fn(this)
+    return this
 
 window.EaseStepperNs = ns
 window.EaseStepper = EaseStepper
