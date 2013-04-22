@@ -1,5 +1,5 @@
 /*! EaseStepper (https://github.com/Takazudo/EaseStepper)
- * lastupdate: 2013-04-19
+ * lastupdate: 2013-04-22
  * version: 1.0.0
  * author: 'Takazudo' Takeshi Takatsudo <takazudo@gmail.com>
  * License: MIT */
@@ -132,6 +132,7 @@
       elapsedTime = 0;
       currentVal = 0;
       this._whileEasing = true;
+      this._timerId = null;
       tick = function() {
         var elapsedTimeRate, valueChangeRate;
         if (_this._stopRequested === true) {
@@ -140,18 +141,24 @@
         if (elapsedTime >= o.duration) {
           _this._whileEasing = false;
           _this._triggerEvent('end', 1, 1, o.valueInChange);
+          _this._clearTimer();
           return;
         }
-        if (elapsedTime !== 0) {
-          elapsedTimeRate = elapsedTime / o.duration;
-          valueChangeRate = o.easing(elapsedTimeRate, elapsedTime, 0, 1, o.duration);
-          currentVal = o.valueInChange * valueChangeRate;
-          _this._triggerEvent('step', elapsedTimeRate, valueChangeRate, currentVal);
-        }
-        elapsedTime += o.fps;
-        return setTimeout(tick, o.fps);
+        elapsedTimeRate = elapsedTime / o.duration;
+        valueChangeRate = o.easing(elapsedTimeRate, elapsedTime, 0, 1, o.duration);
+        currentVal = o.valueInChange * valueChangeRate;
+        _this._triggerEvent('step', elapsedTimeRate, valueChangeRate, currentVal);
+        return elapsedTime += o.fps;
       };
-      tick();
+      this._timerId = setInterval(tick, o.fps);
+      return this;
+    };
+
+    EaseStepper.prototype._clearTimer = function() {
+      if (this._timerId) {
+        clearInterval(this._timerId);
+        this._timerId = null;
+      }
       return this;
     };
 
@@ -159,6 +166,7 @@
       if (this._whileEasing === false) {
         return false;
       }
+      this._clearTimer();
       this._stopRequested = true;
       this._triggerEvent('stop', this._currentData);
       return this;

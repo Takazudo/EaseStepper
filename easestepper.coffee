@@ -103,6 +103,7 @@ class EaseStepper extends ns.Event
     elapsedTime = 0
     currentVal = 0
     @_whileEasing = true
+    @_timerId = null
 
     tick = =>
 
@@ -112,25 +113,30 @@ class EaseStepper extends ns.Event
 
         @_whileEasing = false
         @_triggerEvent 'end', 1, 1, o.valueInChange
+        @_clearTimer()
         return
 
-      if elapsedTime isnt 0
+      elapsedTimeRate = elapsedTime / o.duration
+      valueChangeRate = o.easing elapsedTimeRate, elapsedTime, 0, 1, o.duration
+      currentVal = o.valueInChange * valueChangeRate
 
-        elapsedTimeRate = elapsedTime / o.duration
-        valueChangeRate = o.easing elapsedTimeRate, elapsedTime, 0, 1, o.duration
-        currentVal = o.valueInChange * valueChangeRate
-
-        @_triggerEvent 'step', elapsedTimeRate, valueChangeRate, currentVal
+      @_triggerEvent 'step', elapsedTimeRate, valueChangeRate, currentVal
 
       elapsedTime += o.fps
-      setTimeout tick, o.fps
 
-    tick()
+    @_timerId = setInterval tick, o.fps
 
+    return this
+
+  _clearTimer: ->
+    if @_timerId
+      clearInterval @_timerId
+      @_timerId = null
     return this
 
   stop: ->
     return false if @_whileEasing is false
+    @_clearTimer()
     @_stopRequested = true
     @_triggerEvent 'stop', @_currentData
     return this
