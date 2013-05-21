@@ -1,6 +1,6 @@
 /*! EaseStepper (https://github.com/Takazudo/EaseStepper)
  * lastupdate: 2013-05-21
- * version: 1.0.0
+ * version: 1.1.0
  * author: 'Takazudo' Takeshi Takatsudo <takazudo@gmail.com>
  * License: MIT */
 (function() {
