@@ -23,7 +23,7 @@ $(function() {
 
 	tests['a'] = function() {
 		var stepper = new EaseStepper({
-			fps: 13,
+			interval: 13,
 			easing: $.easing.swing,
 			duration: 3000,
 			valueInChange: 400,
@@ -35,7 +35,7 @@ $(function() {
 	};
 	tests['b'] = function() {
 		var stepper = new EaseStepper({
-			fps: 100,
+			interval: 100,
 			easing: $.easing.easeInQuint,
 			duration: 2000,
 			valueInChange: 200,
@@ -47,7 +47,7 @@ $(function() {
 	};
 	tests['c'] = function() {
 		var stepper = new EaseStepper({
-			fps: 30,
+			interval: 30,
 			easing: $.easing.easeInOutQuart,
 			duration: 1000,
 			valueInChange: 600,
@@ -59,7 +59,7 @@ $(function() {
 	};
 	tests['d'] = function() {
 		var stepper = new EaseStepper({
-			fps: 13,
+			interval: 13,
 			easing: $.easing.easeOutBounce,
 			duration: 600,
 			valueInChange: 400,
@@ -123,16 +123,16 @@ $(function() {
 <div id="graph"></div>
 
 <div class="block" data-test-name="a">
-	<button class="start">0 to 400 in 3000 millisec (swing, fps:13)</button> <button class="stop">stop</button> value: <span></span>
+	<button class="start">0 to 400 in 3000 millisec (swing, interval:13)</button> <button class="stop">stop</button> value: <span></span>
 </div>
 <div class="block" data-test-name="b">
-	<button class="start">0 to 200 in 2000 millisec (easeInQuint, fps:100)</button> <button class="stop">stop</button> value: <span></span>
+	<button class="start">0 to 200 in 2000 millisec (easeInQuint, interval:100)</button> <button class="stop">stop</button> value: <span></span>
 </div>
 <div class="block" data-test-name="c">
-	<button class="start">0 to 600 in 1000 millisec (easeInOutQuart, fps:30)</button> <button class="stop">stop</button> value: <span></span>
+	<button class="start">0 to 600 in 1000 millisec (easeInOutQuart, interval:30)</button> <button class="stop">stop</button> value: <span></span>
 </div>
 <div class="block" data-test-name="d">
-	<button class="start">1000 to 1400 in 600 millisec (easeOutBounce, fps:13)</button> <button class="stop">stop</button> value: <span></span>
+	<button class="start">1000 to 1400 in 600 millisec (easeOutBounce, interval:13)</button> <button class="stop">stop</button> value: <span></span>
 </div>
 
 </body>

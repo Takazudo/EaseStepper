@@ -1,5 +1,5 @@
 /*! EaseStepper (https://github.com/Takazudo/EaseStepper)
- * lastupdate: 2013-04-22
+ * lastupdate: 2013-05-21
  * version: 1.0.0
  * author: 'Takazudo' Takeshi Takatsudo <takazudo@gmail.com>
  * License: MIT */
@@ -99,8 +99,8 @@
     EaseStepper.prototype._tweakOptions = function() {
       var o;
       o = this.options;
-      if (!o.fps) {
-        o.fps = 13;
+      if (!o.interval) {
+        o.interval = 13;
       }
       if (o.done) {
         this.done(o.done);
@@ -148,9 +148,9 @@
         valueChangeRate = o.easing(elapsedTimeRate, elapsedTime, 0, 1, o.duration);
         currentVal = o.valueInChange * valueChangeRate;
         _this._triggerEvent('step', elapsedTimeRate, valueChangeRate, currentVal);
-        return elapsedTime += o.fps;
+        return elapsedTime += o.interval;
       };
-      this._timerId = setInterval(tick, o.fps);
+      this._timerId = setInterval(tick, o.interval);
       return this;
     };
 

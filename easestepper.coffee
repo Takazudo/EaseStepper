@@ -54,7 +54,7 @@ class ns.Event
 class EaseStepper extends ns.Event
 
   # options:
-  #   fps
+  #   interval
   #   easing
   #   duration
   #   valueInChange
@@ -71,8 +71,8 @@ class EaseStepper extends ns.Event
 
     o = @options
 
-    unless o.fps
-      o.fps = 13
+    unless o.interval
+      o.interval = 13
 
     if o.done
       @done o.done
@@ -122,9 +122,9 @@ class EaseStepper extends ns.Event
 
       @_triggerEvent 'step', elapsedTimeRate, valueChangeRate, currentVal
 
-      elapsedTime += o.fps
+      elapsedTime += o.interval
 
-    @_timerId = setInterval tick, o.fps
+    @_timerId = setInterval tick, o.interval
 
     return this
 
